@@ -1,10 +1,13 @@
 ##安装
 >npm i -gd atm3-command-upload
+
 ##示例
 ###上传文件
 >atm upload -f t.txt
+
 ###上传文件夹
 >atm upload -p ./
+
 ###上传zip文件
 >atm upload -f t.zip
 
