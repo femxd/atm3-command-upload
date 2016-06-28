@@ -1,6 +1,6 @@
 {
   "name": "atm3-command-upload",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "scaffold for atm",
   "main": "index.js",
   "scripts": {

@@ -15,7 +15,7 @@ exports.register = function (commander, settings) {
                 var to = args[0],
                     distPath = options.path,
                     filePath = options.file,
-                    receiver = "http://localhost:8009/receiver/receiver2.php",
+                    receiver = "http://wapstatic.kf0309.3g.qq.com/receiver/receiver2.php",
                     formData;
 
                 if(!filePath && !distPath){
