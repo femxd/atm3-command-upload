@@ -1,0 +1,37 @@
+{
+  "name": "atm3-command-upload",
+  "version": "0.0.1",
+  "description": "scaffold for atm",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/femxd/atm3-command-upload.git"
+  },
+  "keywords": [
+    "atm",
+    "fis3",
+    "upload"
+  ],
+  "author": {
+    "name": "fis"
+  },
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/femxd/atm3-command-upload/issues"
+  },
+  "homepage": "https://github.com/femxd/atm3-command-upload",
+  "dependencies": {
+    "request": "^2.72.0"
+  },
+  "maintainers": [
+    {
+      "name": "soakit",
+      "email": "liuchang2024@gmail.com"
+    }
+  ],
+  "directories": {},
+  "readme": "ERROR: No README data found!"
+}
