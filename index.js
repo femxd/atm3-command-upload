@@ -47,7 +47,7 @@ exports.register = function (commander, settings) {
 	            fis.log.info('Current Dir: %s', settings.root);
 	            var conf, conf_from, conf_to, conf_ignore;
 	            if (settings.root) {
-	                require(settings.root + "\\" + "fis-conf.js");
+	                require( path.join(settings.root, "fis-conf.js") );
 	                conf = fis.get("atm");
 	                if ( conf.uploadConfig ) {
 	                    var uploadConfig = conf.uploadConfig || {};
@@ -59,13 +59,13 @@ exports.register = function (commander, settings) {
 	            	conf = {};
 	            }
 
-	            var from = cli_from || conf_from,
+	            var fr = cli_from || conf_from,
 	                to = cli_to || conf_to,
 	                ignore = cli_ignore || conf_ignore,
 	                receiver = conf.uploadService|| "http://wapstatic.kf0309.3g.qq.com/deploy",
 	                // receiver = conf.uploadService|| "http://localhost:8009/deploy",
 	                formData;
-	            if (!from) {
+	            if (!fr) {
 	                fis.log.error("\n　　The upload from is required [could be a file (zip file would automatically extract ) or a path. ]!\n");
 	                return process.exit(0);
 	            }
@@ -76,21 +76,22 @@ exports.register = function (commander, settings) {
 	            	var match = ignore.match(new RegExp('^/(.*?)/([gimy]*)$'));
 					ignore = new RegExp(match[1], match[2]);
 	            }
-	            fis.log.info("upload from:", from, ", to:", to, ", ignore:", ignore);
+	            fis.log.info("upload from:", fr, ", to:", to, ", ignore:", ignore);
                 
-	            var dist = path.resolve(from);
+	            var dist = path.resolve(fr);
 	            fs.stat(dist, function(err, stats){
 	            	if( err ){
-	            		fis.log.error(from, "does not exists");
+	            		fis.log.error(fr, "does not exist.");
 	            	}
 	            	if(stats.isDirectory()) {
 	            		fis.log.info("Start upload path->'" + dist + "' files");
 	            		explorer(dist, ignore ,function (file) {
 	            		    var relativePath = path.relative(dist, file);
 	            		    formData = {
-	            		        to: to + "/" + relativePath,
+	            		        to: path.join(to, relativePath),
 	            		        file: fs.createReadStream(file)
 	            		    };
+	            		    fis.log.info("formData: to", formData.to);
 	            		    request.post({ url: receiver, formData: formData }, function optionalCallback(err, httpResponse, body) {
 	            		        if (err) {
 	            		            return fis.log.error('upload failed:', relativePath + "\n Error:" + err);
@@ -108,8 +109,9 @@ exports.register = function (commander, settings) {
 	            		if(ext === ".zip") {
 	                        formData.type = ext.substr(1);
 	                    }else{
-	                        formData.to = formData.to + "/" + basename
+	                        formData.to = path.join(formData.to, basename);
 	                    }
+	                    fis.log.info("formData: to", formData.to);
 	            		fis.log.info("start upload file ", dist, ', to destination: ', formData.to);
 	            		request.post({ url: receiver, formData: formData }, function optionalCallback(err, httpResponse, body) {
 	            		    if (err) {
@@ -138,7 +140,7 @@ function explorer(dpath, ignore, callback) {
         }
 
         files.forEach(function (file) {
-            fs.stat(dpath + "\\" + file + "", function (err, stat) {
+            fs.stat( path.join(dpath, file), function (err, stat) {
                 if (err) {
                     console.log(err);
                     return;
@@ -150,9 +152,9 @@ function explorer(dpath, ignore, callback) {
                 	}
                 }
                 if (stat.isDirectory()) {
-                    explorer(dpath + "\\" + file, ignore, callback);
+                    explorer(path.join(dpath, file), ignore, callback);
                 } else {
-                    callback && callback(dpath + "\\" + file);
+                    callback && callback(path.join(dpath, file));
                 }
             });
         });
