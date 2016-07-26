@@ -63,7 +63,7 @@ exports.register = function (commander, settings) {
 	                to = cli_to || conf_to,
 	                ignore = cli_ignore || conf_ignore,
 	                receiver = conf.uploadService|| "http://wapstatic.kf0309.3g.qq.com/deploy",
-	                // receiver = conf.uploadService|| "http://localhost:8009/deploy",
+	                // receiver = conf.uploadService|| "http://localhost:8000/deploy",
 	                formData;
 	            if (!fr) {
 	                fis.log.error("\n　　The upload from is required [could be a file (zip file would automatically extract ) or a path. ]!\n");
@@ -76,7 +76,7 @@ exports.register = function (commander, settings) {
 	            	var match = ignore.match(new RegExp('^/(.*?)/([gimy]*)$'));
 					ignore = new RegExp(match[1], match[2]);
 	            }
-	            fis.log.info("upload from:", fr, ", to:", to, ", ignore:", ignore);
+	            fis.log.info("upload from:", fr, ", to:", to, ", ignore:", ignore, ", receiver:", receiver);
                 
 	            var dist = path.resolve(fr);
 	            fs.stat(dist, function(err, stats){
@@ -88,15 +88,17 @@ exports.register = function (commander, settings) {
 	            		explorer(dist, ignore ,function (file) {
 	            		    var relativePath = path.relative(dist, file);
 	            		    formData = {
-	            		        to: path.join(to, relativePath),
+	            		        to: path.join(to, relativePath).replace(/\\/g, '/'),
 	            		        file: fs.createReadStream(file)
 	            		    };
 	            		    fis.log.info("formData: to", formData.to);
 	            		    request.post({ url: receiver, formData: formData }, function optionalCallback(err, httpResponse, body) {
-	            		        if (err) {
-	            		            return fis.log.error('upload failed:', relativePath + "\n Error:" + err);
+	            		        var code = httpResponse.statusCode;
+	            		        if(code == 200){
+	            		        	fis.log.info("Upload " + relativePath + " successful!");
+	            		        }else{
+	            		        	return fis.log.error('code:', code, ' upload failed:', relativePath + "\nError:" + body);
 	            		        }
-	            		        fis.log.info("Upload " + relativePath + " successful!");
 	            		    });
 	            		});
 	            	}else if(stats.isFile()) {
@@ -109,15 +111,17 @@ exports.register = function (commander, settings) {
 	            		if(ext === ".zip") {
 	                        formData.type = ext.substr(1);
 	                    }else{
-	                        formData.to = path.join(formData.to, basename);
+	                        formData.to = path.join(formData.to, basename).replace(/\\/g, '/');
 	                    }
 	                    fis.log.info("formData: to", formData.to);
 	            		fis.log.info("start upload file ", dist, ', to destination: ', formData.to);
 	            		request.post({ url: receiver, formData: formData }, function optionalCallback(err, httpResponse, body) {
-	            		    if (err) {
-	            		        return fis.log.error('upload failed:', dist + "\n Error:" + err);
-	            		    }
-	            		    fis.log.info("Upload successful!");
+	            			var code = httpResponse.statusCode;
+	            			if(code == 200){
+	            				fis.log.info("Upload successful!");	
+	            			}else{
+	            				return fis.log.error('code:', code, ' upload failed:', dist + "\nError:" + body);
+	            			}
 	            		});
 	            	}
 	            	
