@@ -1,6 +1,6 @@
 {
   "name": "atm3-command-upload",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "the upload file command for atm3",
   "main": "index.js",
   "scripts": {

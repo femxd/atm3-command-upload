@@ -9,7 +9,7 @@ exports.desc = 'upload the target path/file to the server.';
 exports.register = function (commander, settings) {
 	commander.option('-f, --from <from>', 'waiting upload source (could be a file (zip file would automatically extract ) or a path. )')
 		.option('-t, --to <to>', 'waiting upload to')
-		.option('-r, --receiver <receiver>', 'receiver url')
+		.option('-u, --receiver <receiver>', 'receiver url')
 		.option('-i, --ignore <ignore>', 'waiting upload ignore (regular expression)')
 		.option('--verbose', 'enable verbose mode')
 		.action(function (template) {
